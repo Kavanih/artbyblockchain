@@ -1,0 +1,11 @@
+export * from "./ir";
+export * from "./schema";
+export { compile, noiseField } from "./compile";
+export { programToJs, programToPixelFn, CLAMP_JS } from "./backend-js";
+export type { PixelFn } from "./backend-js";
+export { programToGlsl } from "./backend-glsl";
+export { paramsToLatex, exprToLatex, latexDocToString, latexName } from "./backend-latex";
+export type { LatexDoc, LatexLine } from "./backend-latex";
+export { renderCPU } from "./render";
+export type { RenderResult } from "./render";
+export { presets, presetNames, PRESET_INPUTS } from "./presets";

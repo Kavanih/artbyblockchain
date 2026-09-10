@@ -1,0 +1,15 @@
+{
+  "name": "slotart",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "dev": "pnpm --filter web dev",
+    "e2e": "pnpm --filter web e2e"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

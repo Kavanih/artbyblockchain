@@ -1,0 +1,39 @@
+@import "tailwindcss";
+@import "katex/dist/katex.min.css";
+
+:root {
+  --bg: #0b0d12;
+  --panel: #12161e;
+  --line: #232a36;
+  --text: #e6e9ef;
+  --muted: #8b94a6;
+  --accent: #f0b35a;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.katex-display {
+  margin: 0.4em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.2em 0;
+}
+
+.formula-line {
+  border-bottom: 1px solid var(--line);
+  padding: 0.35rem 0;
+}
+
+input[type="range"] {
+  accent-color: var(--accent);
+}

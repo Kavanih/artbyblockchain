@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// One row per claimed block slot. Mirrors the account a future on-chain
+// program would hold at a PDA seeded by (chain, network, slot).
+model SlotClaim {
+  id        String   @id @default(cuid())
+  chain     String
+  network   String
+  slot      BigInt
+  blockhash String
+  owner     String
+  mint      Mint?
+  createdAt DateTime @default(now())
+
+  @@unique([chain, network, slot])
+}
+
+model Mint {
+  id             String     @id @default(cuid())
+  chain          String
+  network        String
+  kind           String
+  owner          String
+  claimId        String?    @unique
+  claim          SlotClaim? @relation(fields: [claimId], references: [id])
+  mappingVersion Int?
+  params         Json
+  paramsHash     String
+  imageHash      String
+  metadata       Json
+  assetAddress   String
+  txSignature    String
+  status         String
+  createdAt      DateTime   @default(now())
+
+  @@index([owner])
+  @@index([createdAt])
+}

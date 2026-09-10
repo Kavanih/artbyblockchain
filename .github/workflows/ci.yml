@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: slotart
+          POSTGRES_PASSWORD: slotart
+          POSTGRES_DB: slotart
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U slotart"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://slotart:slotart@localhost:5433/slotart
+      SOLANA_RPC_URL: http://localhost:8899
+      LLM_MOCK: "1"
+      NEXT_PUBLIC_SOLANA_NETWORK: devnet
+      NEXT_PUBLIC_ENABLE_MAINNET: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Engine unit tests
+        run: pnpm --filter @slotart/engine test
+      - name: Prisma client and schema
+        run: pnpm --filter web db:generate && pnpm --filter web db:push
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Web unit tests
+        run: pnpm --filter web test
+      - name: Install Playwright browsers
+        run: pnpm --filter web exec playwright install --with-deps chromium
+      - name: End to end tests
+        run: pnpm --filter web e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report
+      - name: Next build
+        run: pnpm --filter web build
