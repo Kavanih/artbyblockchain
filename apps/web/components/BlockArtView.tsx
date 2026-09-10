@@ -32,8 +32,8 @@ export function BlockArtView({ block, params, doc }: { block: BlockSummary; para
           <FormulaCanvas params={params} width={768} height={768} />
         </div>
         <div className="flex flex-wrap gap-3 text-sm">
-          <a className="underline" href={`/api/render?slot=${block.slot}&size=1024`} target="_blank" rel="noreferrer">
-            Canonical PNG (CPU render, 1024 px)
+          <a className="underline" href={`/api/render?slot=${block.slot}&size=512`} target="_blank" rel="noreferrer">
+            Canonical PNG (CPU render, 512 px)
           </a>
           <a className="underline" href={`/api/block/${block.slot}`} target="_blank" rel="noreferrer">
             Block data and parameters as JSON
