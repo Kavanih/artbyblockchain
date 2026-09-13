@@ -14,7 +14,7 @@ function fmtTime(t: number | null) {
 export function BlockArtView({ block, params, doc }: { block: BlockSummary; params: Params; doc: LatexDoc }) {
   const [tab, setTab] = useState<"data" | "params" | "formula">("data");
   const rows: [string, React.ReactNode][] = [
-    ["Slot", block.slot],
+    ["Slot", <span key="s" className="tabular">{block.slot}</span>],
     ["Blockhash", <code key="h" className="break-all text-xs">{block.blockhash}</code>],
     ["Parent slot", block.parentSlot],
     ["Block height", block.blockHeight ?? "unknown"],
@@ -25,73 +25,83 @@ export function BlockArtView({ block, params, doc }: { block: BlockSummary; para
     ["Distinct programs", block.programIds.length],
     ["Layers derived", params.layers.length]
   ];
+
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      <div className="space-y-3">
-        <div className="panel overflow-hidden">
-          <FormulaCanvas params={params} width={768} height={768} />
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+      <div className="space-y-4">
+        <div className="hero-frame panel-soft overflow-hidden">
+          <FormulaCanvas params={params} width={768} height={768} className="block w-full" />
         </div>
-        <div className="flex flex-wrap gap-3 text-sm">
-          <a className="underline" href={`/api/render?slot=${block.slot}&size=512`} target="_blank" rel="noreferrer">
+        <div className="flex flex-wrap gap-4 text-sm">
+          <a className="text-[var(--accent)] underline-offset-2 hover:underline" href={`/api/render?slot=${block.slot}&size=512`} target="_blank" rel="noreferrer">
             Canonical PNG (CPU render, 512 px)
           </a>
-          <a className="underline" href={`/api/block/${block.slot}`} target="_blank" rel="noreferrer">
+          <a className="text-[var(--accent)] underline-offset-2 hover:underline" href={`/api/block/${block.slot}`} target="_blank" rel="noreferrer">
             Block data and parameters as JSON
           </a>
         </div>
         <MintPanel kind="block" slot={block.slot} params={params} />
       </div>
-      <div className="panel p-4">
-        <div className="mb-3 flex gap-2 text-sm">
+
+      <div className="panel p-5">
+        <div className="mb-4 flex gap-1 border-b border-[var(--line-soft)]">
           {(["data", "params", "formula"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`rounded px-3 py-1 ${tab === t ? "bg-[var(--accent)] text-black" : "border border-[var(--line)]"}`}
+              className={`relative px-3 py-2 text-sm transition-colors ${
+                tab === t ? "text-[var(--accent-ink)]" : "text-[var(--muted)] hover:text-[var(--text)]"
+              }`}
             >
               {t === "data" ? "Block data" : t === "params" ? "Parameters" : "Formula"}
+              {tab === t && <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-[var(--accent)]" />}
             </button>
           ))}
         </div>
+
         {tab === "data" && (
-          <div className="space-y-4 text-sm">
+          <div className="space-y-5 text-sm">
             <table className="w-full">
               <tbody>
                 {rows.map(([k, v]) => (
-                  <tr key={k} className="border-b border-[var(--line)]">
-                    <td className="py-1 pr-3 text-[var(--muted)]">{k}</td>
-                    <td className="py-1">{v}</td>
+                  <tr key={k} className="border-b border-[var(--line-soft)]">
+                    <td className="py-1.5 pr-4 text-[var(--muted)]">{k}</td>
+                    <td className="py-1.5">{v}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
             <div>
-              <div className="mb-1 text-[var(--muted)]">Program IDs ({block.programIds.length})</div>
-              <div className="max-h-40 overflow-auto text-xs">
+              <div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-[var(--faint)]">
+                Program IDs ({block.programIds.length})
+              </div>
+              <div className="max-h-40 overflow-auto rounded-md bg-[var(--panel-soft)] p-2 text-xs">
                 {block.programIds.map((p) => (
-                  <div key={p} className="font-mono">{p}</div>
+                  <div key={p} className="truncate mono">{p}</div>
                 ))}
-                {block.programIds.length === 0 && <div>none</div>}
+                {block.programIds.length === 0 && <div className="text-[var(--faint)]">none</div>}
               </div>
             </div>
             <div>
-              <div className="mb-1 text-[var(--muted)]">Signatures (first {Math.min(20, block.signatures.length)} of {block.signatures.length})</div>
-              <div className="max-h-40 overflow-auto text-xs">
+              <div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-[var(--faint)]">
+                Signatures (first {Math.min(20, block.signatures.length)} of {block.signatures.length})
+              </div>
+              <div className="max-h-40 overflow-auto rounded-md bg-[var(--panel-soft)] p-2 text-xs">
                 {block.signatures.slice(0, 20).map((s) => (
-                  <div key={s} className="truncate font-mono">{s}</div>
+                  <div key={s} className="truncate mono">{s}</div>
                 ))}
-                {block.signatures.length === 0 && <div>none</div>}
+                {block.signatures.length === 0 && <div className="text-[var(--faint)]">none</div>}
               </div>
             </div>
           </div>
         )}
         {tab === "params" && (
-          <pre className="max-h-[70vh] overflow-auto text-xs" data-testid="params-json">
+          <pre className="max-h-[70vh] overflow-auto rounded-md bg-[var(--panel-soft)] p-3 text-xs" data-testid="params-json">
             {JSON.stringify(params, null, 2)}
           </pre>
         )}
         {tab === "formula" && (
-          <div className="max-h-[70vh] overflow-auto" data-testid="formula">
+          <div className="max-h-[70vh] overflow-auto pr-1" data-testid="formula">
             <Formula doc={doc} />
           </div>
         )}

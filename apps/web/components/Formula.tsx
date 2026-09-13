@@ -17,15 +17,22 @@ export function Formula({ doc }: { doc: LatexDoc }) {
   const [open, setOpen] = useState<Record<string, boolean>>({ preamble: true, fields: true, composite: true });
   const toggle = (k: string) => setOpen((o) => ({ ...o, [k]: !o[k] }));
   const Section = ({ id, title, lines }: { id: string; title: string; lines: LatexLine[] }) => (
-    <div className="mb-3">
-      <button onClick={() => toggle(id)} className="mb-1 text-sm font-medium text-[var(--accent)]">
-        {open[id] ? "Hide" : "Show"} {title} ({lines.length})
+    <div className="mb-4">
+      <button
+        onClick={() => toggle(id)}
+        className="mb-1.5 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-[var(--accent)]"
+      >
+        <span className="inline-block w-3 transition-transform" style={{ transform: open[id] ? "rotate(90deg)" : "none" }}>
+          ‹
+        </span>
+        {title}
+        <span className="text-[var(--faint)] normal-case tracking-normal">({lines.length})</span>
       </button>
       {open[id] && lines.map((l, i) => <Line key={i} line={l} />)}
     </div>
   );
   return (
-    <div className="text-sm">
+    <div className="text-sm leading-relaxed">
       <Section id="preamble" title="definitions" lines={doc.preamble} />
       <Section id="fields" title="fields" lines={doc.fields} />
       {doc.layers.map((l, i) => (

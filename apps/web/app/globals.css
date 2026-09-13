@@ -1,25 +1,72 @@
 @import "tailwindcss";
 @import "katex/dist/katex.min.css";
 
-:root {
-  --bg: #0b0d12;
-  --panel: #12161e;
-  --line: #232a36;
-  --text: #e6e9ef;
-  --muted: #8b94a6;
-  --accent: #f0b35a;
+@font-face {
+  font-family: "Editorial";
+  src: url("https://fonts.gstatic.com/s/inter/v13/UptmEX7mofGa8M1XjWi8Qp.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
 }
+
+:root {
+  --bg: #faf7f1;
+  --panel: #ffffff;
+  --panel-soft: #f4efe4;
+  --line: #e2dccd;
+  --line-soft: #ece7da;
+  --text: #1c1915;
+  --muted: #6b6560;
+  --faint: #9a938a;
+  --accent: #b45309;
+  --accent-soft: #f3d9b8;
+  --accent-ink: #7c3a00;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Georgia", "Times New Roman", serif;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0 0 6px 0;
+}
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+}
+
+html { scroll-behavior: smooth; }
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Editorial display type. Falls back to a serif stack when the
+   webfont does not load, which keeps the look honest either way. */
+ editorial-display {
+  font-family: var(--serif);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
 }
 
 .panel {
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 14px;
+}
+
+.panel-soft {
+  background: var(--panel-soft);
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
 }
 
 .katex-display {
@@ -27,13 +74,43 @@ body {
   overflow-x: auto;
   overflow-y: hidden;
   padding: 0.2em 0;
+  color: var(--text);
 }
 
 .formula-line {
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--line-soft);
   padding: 0.35rem 0;
 }
 
 input[type="range"] {
   accent-color: var(--accent);
+}
+
+/* Thin hairline rule used as a section divider. */
+.rule {
+  height: 1px;
+  background: var(--line);
+}
+
+.rule-thin {
+  height: 1px;
+  background: var(--line-soft);
+}
+
+/* A subtle vignette behind the hero canvas so the art reads as lit. */
+.hero-frame {
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(180, 83, 9, 0.06), transparent 60%),
+    radial-gradient(90% 80% at 50% 100%, rgba(124, 58, 0, 0.05), transparent 55%),
+    var(--panel);
+}
+
+/* Monospace data cells. */
+.mono {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+/* Long numeric values must not overflow the layout. */
+.tabular {
+  font-variant-numeric: tabular-nums;
 }

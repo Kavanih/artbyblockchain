@@ -8,6 +8,7 @@ import { ParamEditor } from "./ParamEditor";
 import { MintPanel } from "./MintPanel";
 
 const MAX_IMAGE_EDGE = 768;
+const MAX_PROMPT = 140;
 
 // Downscale an uploaded image to a JPEG data URL for vision input.
 async function fileToDataUrl(file: File): Promise<string> {
@@ -68,21 +69,24 @@ export function CreateView() {
 
   return (
     <div className="space-y-6">
-      <div className="panel space-y-3 p-4">
-        <div className="flex gap-2 text-sm">
+      <div className="panel-soft space-y-4 p-5">
+        <div className="flex flex-wrap items-center gap-1 border-b border-[var(--line-soft)]">
           {(["text", "image"] as const).map((m) => (
             <button
               key={m}
               onClick={() => setMode(m)}
-              className={`rounded px-3 py-1 ${mode === m ? "bg-[var(--accent)] text-black" : "border border-[var(--line)]"}`}
+              className={`relative px-4 py-2 text-sm transition-colors ${
+                mode === m ? "text-[var(--accent-ink)]" : "text-[var(--muted)] hover:text-[var(--text)]"
+              }`}
               data-testid={`mode-${m}`}
             >
               {m === "text" ? "Describe it" : "Upload an image"}
+              {mode === m && <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-[var(--accent)]" />}
             </button>
           ))}
           <button
             onClick={() => update(presets.flower)}
-            className="ml-auto rounded border border-[var(--line)] px-3 py-1"
+            className="ml-auto rounded border border-[var(--line)] px-3 py-1.5 text-xs text-[var(--muted)] hover:bg-[var(--panel)]"
             data-testid="load-preset"
           >
             Load a preset instead
@@ -98,66 +102,70 @@ export function CreateView() {
                 const f = e.target.files?.[0];
                 if (f) setImageUrl(await fileToDataUrl(f));
               }}
+              className="text-sm text-[var(--muted)]"
             />
             {imageUrl && <img src={imageUrl} alt="upload preview" className="h-24 rounded border border-[var(--line)]" />}
           </div>
         )}
         <textarea
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e) => setText(e.target.value.slice(0, MAX_PROMPT))}
           placeholder={mode === "text" ? "A field of orange poppies under a cloudy evening sky" : "Optional guidance for the model"}
-          className="h-24 w-full rounded-md border border-[var(--line)] bg-[var(--bg)] p-2 text-sm"
+          className="h-24 w-full resize-none rounded-md border border-[var(--line)] bg-[var(--panel)] p-3 text-sm focus:border-[var(--accent)] focus:outline-none"
           data-testid="description"
         />
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={generate}
             disabled={status.kind === "busy" || (mode === "text" ? !text.trim() : !imageUrl)}
-            className="rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium text-black disabled:opacity-40"
+            className="rounded-md bg-[var(--accent)] px-5 py-2 text-sm font-medium text-white disabled:opacity-40"
             data-testid="generate"
           >
             {status.kind === "busy" ? "Generating" : "Generate"}
           </button>
           {meta && <span className="text-xs text-[var(--muted)]">{meta}</span>}
-          {status.kind === "error" && <span className="text-sm text-red-400" data-testid="generate-error">{status.msg}</span>}
+          {status.kind === "error" && <span className="text-sm text-red-600" data-testid="generate-error">{status.msg}</span>}
         </div>
       </div>
 
       {params && doc && (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className="space-y-3">
-            <div className="panel overflow-hidden">
-              <FormulaCanvas params={params} width={768} height={768} />
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          <div className="space-y-4">
+            <div className="hero-frame panel-soft overflow-hidden">
+              <FormulaCanvas params={params} width={768} height={768} className="block w-full" />
             </div>
-            <div className="text-sm font-medium">{params.title}</div>
+            <div className="font-serif text-lg font-medium">{params.title}</div>
             <MintPanel kind="custom" params={params} />
           </div>
-          <div className="panel p-4">
-            <div className="mb-3 flex gap-2 text-sm">
+          <div className="panel p-5">
+            <div className="mb-4 flex gap-1 border-b border-[var(--line-soft)]">
               {(["sliders", "json", "formula"] as const).map((t) => (
                 <button
                   key={t}
                   onClick={() => setTab(t)}
-                  className={`rounded px-3 py-1 ${tab === t ? "bg-[var(--accent)] text-black" : "border border-[var(--line)]"}`}
+                  className={`relative px-3 py-2 text-sm transition-colors ${
+                    tab === t ? "text-[var(--accent-ink)]" : "text-[var(--muted)] hover:text-[var(--text)]"
+                  }`}
                 >
                   {t === "sliders" ? "Sliders" : t === "json" ? "Parameters" : "Formula"}
+                  {tab === t && <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-[var(--accent)]" />}
                 </button>
               ))}
             </div>
-            <div className="max-h-[75vh] overflow-auto">
+            <div className="max-h-[78vh] overflow-auto">
               {tab === "sliders" && <ParamEditor params={params} onChange={update} />}
               {tab === "json" && (
                 <div className="space-y-2">
                   <textarea
                     value={jsonDraft}
                     onChange={(e) => setJsonDraft(e.target.value)}
-                    className="h-[60vh] w-full rounded border border-[var(--line)] bg-[var(--bg)] p-2 font-mono text-xs"
+                    className="h-[60vh] w-full resize-none rounded border border-[var(--line)] bg-[var(--panel-soft)] p-3 font-mono text-xs focus:border-[var(--accent)] focus:outline-none"
                     data-testid="params-json"
                   />
-                  <button onClick={applyJson} className="rounded border border-[var(--line)] px-3 py-1 text-sm">
+                  <button onClick={applyJson} className="rounded-md border border-[var(--line)] px-3 py-1.5 text-sm hover:bg-[var(--panel-soft)]">
                     Apply JSON
                   </button>
-                  {jsonError && <div className="text-xs text-red-400">{jsonError}</div>}
+                  {jsonError && <div className="text-xs text-red-600">{jsonError}</div>}
                 </div>
               )}
               {tab === "formula" && <Formula doc={doc} />}

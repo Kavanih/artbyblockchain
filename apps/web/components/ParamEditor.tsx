@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import type { Params } from "@slotart/engine";
 
 // Slider ranges keyed by leaf name; unknown numeric leaves are not editable.
@@ -79,27 +80,40 @@ function collect(obj: unknown, path: Path, out: Field[], skip: Set<string>) {
   }
 }
 
+function fmt(v: number, step: number) {
+  return Number.isInteger(step) ? String(v) : v.toFixed(3);
+}
+
 export function ParamEditor({ params, onChange }: { params: Params; onChange: (p: Params) => void }) {
-  const sections: { title: string; fields: Field[] }[] = [];
-  const skip = new Set(["version", "title", "layers", "name", "kind", "faceOut", "mode"]);
-  const global: Field[] = [];
-  collect({ seed: params.seed, view: params.view, background: params.background }, [], global, skip);
-  sections.push({ title: "Global", fields: global });
-  params.layers.forEach((l, i) => {
-    const f: Field[] = [];
-    collect(l, ["layers", i], f, skip);
-    sections.push({ title: `Layer ${i}: ${l.name ?? l.shape.kind}`, fields: f });
-  });
+  const sections = useMemo(() => {
+    const skip = new Set(["version", "title", "layers", "name", "kind", "faceOut", "mode"]);
+    const result: { title: string; fields: Field[] }[] = [];
+    const global: Field[] = [];
+    collect({ seed: params.seed, view: params.view, background: params.background }, [], global, skip);
+    if (global.length) result.push({ title: "Global", fields: global });
+    params.layers.forEach((l, i) => {
+      const f: Field[] = [];
+      collect(l, ["layers", i], f, skip);
+      result.push({ title: `Layer ${i}: ${l.name ?? l.shape.kind}`, fields: f });
+    });
+    return result;
+  }, [params]);
+
   return (
-    <div className="space-y-4 text-xs" data-testid="param-editor">
+    <div className="space-y-3 text-xs" data-testid="param-editor">
       {sections.map((s) => (
-        <details key={s.title} open={s.title === "Global"}>
-          <summary className="cursor-pointer text-sm font-medium text-[var(--accent)]">{s.title}</summary>
-          <div className="mt-2 grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2">
+        <details key={s.title} open={s.title === "Global"} className="panel-soft rounded-md">
+          <summary className="cursor-pointer px-3 py-2 text-sm font-medium text-[var(--accent-ink)]">
+            {s.title}
+          </summary>
+          <div className="grid grid-cols-1 gap-x-4 gap-y-1 px-3 pb-3 sm:grid-cols-2">
             {s.fields.map((f) => (
               <label key={f.label} className="flex items-center gap-2">
-                <span className="w-44 truncate text-[var(--muted)]" title={f.label}>
-                  {f.label.replace(/^layers\.\d+\./, "").replace(/^background\./, "bg.")}
+                <span className="w-40 truncate text-[var(--muted)]" title={f.label}>
+                  {f.label
+                    .replace(/^layers\.\d+\./, "")
+                    .replace(/^background\./, "bg.")
+                    .replace(/^view\./, "view.")}
                 </span>
                 <input
                   type="range"
@@ -110,7 +124,7 @@ export function ParamEditor({ params, onChange }: { params: Params; onChange: (p
                   onChange={(e) => onChange(setAt(params, f.path, Number(e.target.value)) as Params)}
                   className="flex-1"
                 />
-                <span className="w-12 text-right tabular-nums">{Number.isInteger(f.range[2]) ? f.value : f.value.toFixed(3)}</span>
+                <span className="w-12 text-right tabular nums text-[var(--muted)]">{fmt(f.value, f.range[2])}</span>
               </label>
             ))}
           </div>

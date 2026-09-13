@@ -19,7 +19,7 @@ async function canvasHasContent(page: Page, index = 0) {
 test("home shows the three engine presets", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /formulas/ })).toBeVisible();
-  await expect(page.locator("canvas[data-testid=formula-canvas]")).toHaveCount(3);
+  await expect(page.locator("canvas[data-testid=formula-canvas]")).toHaveCount(4);
   expect(await canvasHasContent(page, 0)).toBe(true);
 });
 

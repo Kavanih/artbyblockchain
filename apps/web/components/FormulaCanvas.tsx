@@ -89,10 +89,10 @@ export function FormulaCanvas({ params, width, height, className, onError }: Pro
         width={width}
         height={height}
         data-testid="formula-canvas"
-        className="block h-auto w-full"
+        className="block w-full rounded-md"
         style={{ aspectRatio: `${width} / ${height}` }}
       />
-      {error && <div className="p-2 text-xs text-red-400">{error}</div>}
+      {error && <div className="mt-2 rounded-md bg-red-50 p-2 text-xs text-red-700">{error}</div>}
     </div>
   );
 }

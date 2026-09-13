@@ -26,19 +26,42 @@ export default async function GalleryPage() {
   } catch (e) {
     error = (e as Error).message;
   }
+
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">Recent slots</h1>
-      {error && <p className="text-red-400">Could not load recent blocks: {error}</p>}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4" data-testid="gallery-grid">
+    <div className="space-y-8">
+      <div className="space-y-2">
+        <p className="text-xs font-medium uppercase tracking-[0.2em] text-[var(--accent)]">Collection</p>
+        <h1 className="font-serif text-4xl font-medium tracking-tight sm:text-5xl">Recent slots</h1>
+        <p className="max-w-2xl text-sm text-[var(--muted)]">
+          The most recent blocks on Solana, each rendered through the same formula engine. Every image is
+          deterministic: the same slot always produces the same picture.
+        </p>
+      </div>
+
+      {error && (
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          Could not load recent blocks: {error}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4" data-testid="gallery-grid">
         {items.map(({ block, params }) => (
-          <Link key={block.slot} href={`/block?slot=${block.slot}`} className="panel overflow-hidden">
-            <FormulaCanvas params={params} width={256} height={256} />
-            <div className="px-3 py-2 text-xs">
-              <div className="font-medium">Slot {block.slot}</div>
-              <div className="text-[var(--muted)]">
-                {block.txCount} txs, {params.layers.length} layers
+          <Link
+            key={block.slot}
+            href={`/block?slot=${block.slot}`}
+            className="group panel overflow-hidden transition-shadow hover:shadow-sm"
+          >
+            <FormulaCanvas params={params} width={320} height={320} className="block w-full" />
+            <div className="flex items-baseline justify-between px-4 py-3">
+              <div>
+                <div className="font-serif text-lg font-medium tabular">Slot {block.slot}</div>
+                <div className="text-xs text-[var(--muted)]">
+                  {block.txCount} txs, {params.layers.length} layers
+                </div>
               </div>
+              <span className="text-xs text-[var(--faint)] transition-colors group-hover:text-[var(--accent)]">
+                view
+              </span>
             </div>
           </Link>
         ))}

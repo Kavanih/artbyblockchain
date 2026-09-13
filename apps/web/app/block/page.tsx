@@ -11,7 +11,11 @@ export default async function BlockPage({ searchParams }: { searchParams: Promis
   const slot = parseSlot(rawSlot);
   let content: React.ReactNode = null;
   if (rawSlot !== undefined && slot === null) {
-    content = <p className="text-red-400">Enter a slot number or the word genesis.</p>;
+    content = (
+      <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        Enter a slot number or the word genesis.
+      </div>
+    );
   } else if (slot !== null) {
     try {
       const art = await getBlockArt(slot);
@@ -20,17 +24,19 @@ export default async function BlockPage({ searchParams }: { searchParams: Promis
     } catch (e) {
       const msg = e instanceof BlockNotFoundError ? e.message : `Could not fetch block: ${(e as Error).message}`;
       content = (
-        <p className="text-red-400" data-testid="block-error">
+        <p className="text-red-600" data-testid="block-error">
           {msg}
         </p>
       );
     }
   }
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Block art</h1>
-        <p className="text-[var(--muted)]">
+    <div className="space-y-8">
+      <div className="space-y-2">
+        <p className="text-xs font-medium uppercase tracking-[0.2em] text-[var(--accent)]">Block art</p>
+        <h1 className="font-serif text-4xl font-medium tracking-tight sm:text-5xl">Render a slot</h1>
+        <p className="max-w-2xl text-sm text-[var(--muted)]">
           Pick a Solana slot. The block data seeds every constant of the formula; see MAPPING.md for the rules.
         </p>
       </div>

@@ -58,10 +58,10 @@ export function MintPanel({ kind, slot, params }: Props) {
   }
 
   return (
-    <div className="panel space-y-3 p-4 text-sm" data-testid="mint-panel">
-      <div className="flex flex-wrap items-center justify-between gap-2">
+    <div className="panel space-y-4 p-5" data-testid="mint-panel">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="font-medium">Mint as NFT</div>
+          <div className="font-serif text-lg font-medium">Mint as NFT</div>
           <div className="text-xs text-[var(--muted)]">
             Network: {network}. Dummy mint mode: the claim is recorded, no transaction is sent yet.
           </div>
@@ -69,27 +69,33 @@ export function MintPanel({ kind, slot, params }: Props) {
         <WalletMultiButton />
       </div>
       {kind === "block" && !claimed && (
-        <div className="text-xs text-[var(--muted)]">One mint per slot. Slot {slot} can be claimed once.</div>
+        <div className="text-xs text-[var(--faint)]">One mint per slot. Slot {slot} can be claimed once.</div>
       )}
       {kind === "block" && claimed && (
         <div className="text-xs" data-testid="slot-claimed">
-          Slot {slot} is already minted by <code>{claimed.owner}</code>.
+          Slot {slot} is already minted by <code className="mono">{claimed.owner}</code>.
         </div>
       )}
       <button
         onClick={mint}
         disabled={!publicKey || state.status === "busy" || !!claimed}
-        className="rounded-md bg-[var(--accent)] px-4 py-2 font-medium text-black disabled:opacity-40"
+        className="rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
         data-testid="mint-button"
       >
         {state.status === "busy" ? "Minting" : publicKey ? "Mint" : "Connect a wallet to mint"}
       </button>
-      {state.status === "error" && <div className="text-red-400" data-testid="mint-error">{state.msg}</div>}
+      {state.status === "error" && <div className="text-sm text-red-600" data-testid="mint-error">{state.msg}</div>}
       {state.status === "done" && state.result && (
-        <div className="space-y-1 text-xs" data-testid="mint-result">
-          <div>Minted. Asset: <code>{state.result.assetAddress}</code></div>
-          <div>Transaction: <code>{state.result.txSignature}</code></div>
-          <div>Image hash: <code>{state.result.imageHash}</code></div>
+        <div className="space-y-1.5 rounded-md bg-[var(--panel-soft)] p-3 text-xs" data-testid="mint-result">
+          <div>
+            Minted. Asset: <code className="mono">{state.result.assetAddress}</code>
+          </div>
+          <div>
+            Transaction: <code className="mono">{state.result.txSignature}</code>
+          </div>
+          <div>
+            Image hash: <code className="mono">{state.result.imageHash}</code>
+          </div>
         </div>
       )}
     </div>

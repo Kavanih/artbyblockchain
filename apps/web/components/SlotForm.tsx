@@ -19,15 +19,15 @@ export function SlotForm({ initial }: { initial: string }) {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="Slot number"
-        className="w-56 rounded-md border border-[var(--line)] bg-[var(--panel)] px-3 py-2"
+        className="w-56 rounded-md border border-[var(--line)] bg-[var(--panel)] px-3 py-2 text-sm focus:border-[var(--accent)] focus:outline-none"
         data-testid="slot-input"
       />
-      <button type="submit" className="rounded-md bg-[var(--accent)] px-4 py-2 font-medium text-black">
+      <button type="submit" className="rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--accent-ink)]">
         Render
       </button>
       <button
         type="button"
-        className="rounded-md border border-[var(--line)] px-4 py-2"
+        className="rounded-md border border-[var(--line)] px-4 py-2 text-sm text-[var(--text)] hover:bg-[var(--panel-soft)]"
         onClick={() => {
           setValue("genesis");
           router.push("/block?slot=genesis");
