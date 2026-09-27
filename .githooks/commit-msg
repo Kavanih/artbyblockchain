@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Strips AI co-author trailers (Co-Authored-By / Claude-Session, any case)
+# from every commit message before it's saved, regardless of which tool wrote it.
+set -euo pipefail
+
+msg_file="$1"
+
+sed -i.bak -E '/^Co-Authored-By:/Id; /^Claude-Session:/Id' "$msg_file"
+rm -f "$msg_file.bak"
