@@ -85,6 +85,14 @@ Set `OPENROUTER_API_KEY` in `apps/web/.env` for the create page, or
 `LLM_MOCK=1` to use presets instead of a model. The block pages need only a
 public Solana RPC; the database is needed for minting and the mints page.
 
+This repo also ships a `commit-msg` hook (`.githooks/commit-msg`) that strips
+any AI co-author trailers from commit messages. Git doesn't enable hooks from
+a fresh clone automatically, so run this once after cloning:
+
+```bash
+git config core.hooksPath .githooks
+```
+
 ## Tests
 
 ```bash
