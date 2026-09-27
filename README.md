@@ -70,7 +70,7 @@ as your own.
   API routes behind them.
 - `MAPPING.md`: the exact rules that turn block data into parameters.
 
-## Running locally
+## Running locally /
 
 ```bash
 pnpm install
